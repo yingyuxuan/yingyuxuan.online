@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fabric1.20.1MC服务器</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>  
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        dark: '#1D2129',
+                        light: '#F2F3F5'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <!-- 自定义样式 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .section-height {
+                height: 100vh;
+            }
+            .section-padding {
+                padding-top: 80px; /* 为导航栏预留空间 */
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            }
+            .carousel-item {
+                display: none;
+                animation: fadeIn 0.8s ease-in-out;
+            }
+            .carousel-item.active {
+                display: block;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            /* 导航栏样式 */
+            .nav-transparent {
+                @apply bg-transparent;
+            }
+            .nav-solid {
+                @apply bg-white bg-opacity-95 shadow-md;
+            }
+            /* 选中导航项样式 - 底部上移5px */
+            .nav-link.active {
+                @apply text-secondary font-bold text-lg transform -translate-y-1 transition-all duration-300;
+            }
+            /* 资源横向滚动容器 */
+            .resources-scroll {
+                overflow-x: hidden; /* 隐藏滚动条 */
+            }
+            /* 翻页按钮样式 */
+            .page-btn {
+                @apply w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300 hover:scale-110 z-40;
+            }
+            .prev-btn {
+                @apply bg-secondary/80 hover:bg-secondary;
+            }
+            .next-btn {
+                @apply bg-primary/80 hover:bg-primary;
+            }
+        }
+        
+        /* 隐藏页面所有滚动条但保留滚动功能 */
+        html, body {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+            overflow-x: hidden;
+        }
+        
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+        
+        /* 隐藏内容区域的滚动条 */
+        .scrollable-content {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+        
+        .scrollable-content::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+    </style>
+</head>
+<body class="font-inter text-dark">
+    <!-- 导航栏 -->
+    <nav id="navbar" class="fixed top-0 left-0 w-full z-50 transition-all duration-300 py-4 px-6 md:px-12 nav-transparent">
+        <div class="container mx-auto flex justify-center">
+            <ul class="flex flex-wrap justify-center space-x-6 md:space-x-8 lg:space-x-10">
+                <li><a href="#home" class="nav-link text-white hover:text-secondary transition-all duration-300 font-medium">首页</a></li>
+                <li><a href="#version" class="nav-link text-white hover:text-secondary transition-all duration-300 font-medium">版本</a></li>
+                <li><a href="#resources" class="nav-link text-white hover:text-secondary transition-all duration-300 font-medium">资源</a></li>
+                <li><a href="#faq" class="nav-link text-white hover:text-secondary transition-all duration-300 font-medium">常见问题</a></li>
+                <li><a href="#changelog" class="nav-link text-white hover:text-secondary transition-all duration-300 font-medium">更新日志</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 首页部分 -->
+    <section id="home" class="section-height relative">
+        <!-- 轮播图容器 -->
+        <div id="carousel" class="absolute inset-0 w-full h-full overflow-hidden">
+            <div class="carousel-item active absolute inset-0">
+                <img src="https://picsum.photos/id/1015/1920/1080" alt="自然风景1" class="w-full h-full object-cover">
+            </div>
+            <div class="carousel-item absolute inset-0">
+                <img src="https://picsum.photos/id/1016/1920/1080" alt="自然风景2" class="w-full h-full object-cover">
+            </div>
+            <div class="carousel-item absolute inset-0">
+                <img src="https://picsum.photos/id/1018/1920/1080" alt="自然风景3" class="w-full h-full object-cover">
+            </div>
+            
+            <!-- 轮播图遮罩 -->
+            <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+        </div>
+        
+        <!-- 首页内容 -->
+        <div class="relative h-full flex flex-col justify-end items-center text-center px-6 pb-20 md:pb-32 z-10">
+            <!-- <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-white mb-4 text-shadow">欢迎来到我的网站</h1> -->
+            <p class="text-[clamp(1rem,2vw,1.25rem)] text-white mb-3 max-w-2xl text-shadow">这是一个简洁的MC服务器网站（ 图文无关，不要在意了，(: ）</p>
+            <p class="text-[clamp(1rem,2vw,1.25rem)] text-white mb-3 max-w-2xl text-shadow">服务器地址：yingyuxuan.online</p>
+            <p class="text-[clamp(1rem,2vw,1.25rem)] text-white max-w-2xl text-shadow">探索下方内容，了解更多关于我们的信息</p>
+        </div>
+        
+        <!-- 轮播图控制按钮 -->
+        <div class="absolute bottom-8 left-0 right-0 flex justify-center space-x-2 z-20">
+            <button class="carousel-dot w-3 h-3 rounded-full bg-white bg-opacity-50 hover:bg-opacity-100 transition-all active"></button>
+            <button class="carousel-dot w-3 h-3 rounded-full bg-white bg-opacity-50 hover:bg-opacity-100 transition-all"></button>
+            <button class="carousel-dot w-3 h-3 rounded-full bg-white bg-opacity-50 hover:bg-opacity-100 transition-all"></button>
+        </div>
+    </section>
+
+    <!-- 版本部分 - 纵向两行展示 -->
+    <section id="version" class="section-height bg-light flex items-start justify-center p-6 section-padding">
+        <div class="w-3/5">
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary mb-8 text-center">版本信息</h2>
+            
+            <div class="grid grid-cols-1 gap-8">
+                <!-- 游戏版本 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 h-full">
+                    <h3 class="text-xl font-semibold text-dark mb-6 flex items-center">
+                        <i class="fa fa-gamepad text-primary mr-3"></i>游戏版本
+                    </h3>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="flex flex-col">
+                            <h4 class="text-lg font-medium text-dark">MC 1.20.1 & Fabric 0.16.10+</h4>
+                            <p class="text-gray-600 mt-2">服务器MC版本和Fabric版本</p>
+                            <p class="text-sm text-gray-500 mt-1">发布日期: 2025-09-28</p>
+                        </div>
+                        <div class="flex flex-col">
+                            <img src="assent/img/img_11.png" alt="" style="min-width:200px ;min-height: 100px;">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mod版本 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 h-full">
+                    <h3 class="text-xl font-semibold text-dark mb-6 flex items-center">
+                        <i class="fa fa-cubes text-primary mr-3"></i>Mod版本
+                    </h3>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="flex flex-col">
+                            <p class="text-gray-600 mt-2">Fabric-api:fabric-api-0.92.6</p>
+                            <p class="text-gray-600 mt-2">世界地图Mod:XaerosWorldMap_1.39.12</p>
+                            <p class="text-gray-600 mt-2">语音Mod:voicechat-2.6.4</p>
+                            <p class="text-gray-600 mt-2">视距优化Mod:DistantHorizons-2.3.4-b</p>
+                            <p class="text-gray-600 mt-2">墓碑Mod:youre-in-grave-danger2.0.16</p>
+                            <p class="text-gray-600 mt-2">武器优化Mod:weaponmaster_ydm-4.2.6</p>
+                            <p class="text-sm text-gray-500 mt-1">发布日期: 2025-09-28</p>
+                        </div>
+                        <div class="flex flex-col">
+                            <img src="assent/img/img_12.png" alt="" style="min-width:200px ;min-height: 100px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 资源部分 - 三栏横向排列展示 -->
+    <section id="resources" class="section-height bg-white flex items-start justify-center p-6 section-padding">
+        <div class="w-3/5">
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary mb-8 text-center">资源下载</h2>
+            
+            <div class="grid grid-cols-3 gap-6">
+                <!-- 启动器 -->
+                <div class="flex flex-col">
+                    <h3 class="font-semibold text-xl mb-4 flex items-center">
+                        <i class="fa fa-rocket text-primary mr-3"></i>启动器
+                    </h3>
+                    <div class="resources-scroll flex-grow">
+                        <div class="space-y-6">
+                            <div class="bg-light rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                                <div class="h-16 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                                    <i class="fa fa-gamepad text-primary text-3xl"></i>
+                                </div>
+                                <p class="font-medium">HMCL启动器</p>
+                                <p class="text-gray-600 text-sm mt-1">支持多版本管理，开源免费</p>
+                                <div class="mt-4 text-sm text-gray-500">
+                                    <p><i class="fa fa-file-o mr-1"></i> 大小: 7.47MB</p>
+                                    <p><i class="fa fa-calendar mr-1"></i> 更新: 2025-09-28</p>
+                                </div>
+                                <div class="mt-4 flex space-x-2">
+<!--                                     <button class="flex-1 bg-primary text-white px-3 py-2 rounded-md hover:bg-primary/90 transition-colors">
+                                        <i class="fa fa-download mr-1"></i>下载
+                                    </button> -->
+                                    <a href="https://hmcl.huangyuhui.net/" target="_blank" class="flex-1 bg-secondary text-white px-3 py-2 rounded-md hover:bg-secondary/90 transition-colors">
+                                        <i class="fa fa-link mr-1"></i>链接
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mod -->
+                <div class="flex flex-col">
+                    <h3 class="font-semibold text-xl mb-4 flex items-center">
+                        <i class="fa fa-puzzle-piece text-primary mr-3"></i>Mod
+                    </h3>
+                    <div class="resources-scroll flex-grow">
+                        <div class="space-y-6">
+                            <div class="bg-light rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                                <div class="h-16 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                                    <i class="fa fa-cog text-primary text-3xl"></i>
+                                </div>
+                                <p class="font-medium">基础模组包</p>
+                                <p class="text-gray-600 text-sm mt-1">必备核心模组，提升体验</p>
+                                <div class="mt-4 text-sm text-gray-500">
+                                    <p><i class="fa fa-file-o mr-1"></i> 大小: 28.1MB</p>
+                                    <p><i class="fa fa-calendar mr-1"></i> 更新: 2025-09-28</p>
+                                </div>
+                                <div class="mt-4 flex space-x-2">
+                                    <a href="downloads/mods.zip" download="mods.zip" class="flex-1 bg-primary text-white px-3 py-2 rounded-md hover:bg-primary/90 transition-colors">
+                                        <i class="fa fa-download mr-1"></i>下载
+                                    </a>
+                                    <a href="https://modrinth.com/mods" target="_blank" class="flex-1 bg-secondary text-white px-3 py-2 rounded-md hover:bg-secondary/90 transition-colors">
+                                        <i class="fa fa-link mr-1"></i>链接
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 光影 -->
+                <div class="flex flex-col">
+                    <h3 class="font-semibold text-xl mb-4 flex items-center">
+                        <i class="fa fa-sun-o text-primary mr-3"></i>光影
+                    </h3>
+                    <div class="resources-scroll flex-grow">
+                        <div class="space-y-6">
+                            <div class="bg-light rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                                <div class="h-16 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                                    <i class="fa fa-star text-primary text-3xl"></i>
+                                </div>
+                                <p class="font-medium">SEUS光影</p>
+                                <p class="text-gray-600 text-sm mt-1">高品质光影效果，真实渲染</p>
+                                <div class="mt-4 text-sm text-gray-500">
+                                    <p><i class="fa fa-file-o mr-1"></i> 大小: 10.7MB</p>
+                                    <p><i class="fa fa-calendar mr-1"></i> 更新: 2025-09-28</p>
+                                </div>
+                                <div class="mt-4 flex space-x-2">
+                                    <a href="downloads/shaderpacks.zip" download="shaderpacks.zip" class="flex-1 bg-primary text-white px-3 py-2 rounded-md hover:bg-primary/90 transition-colors">
+                                        <i class="fa fa-download mr-1"></i>下载
+                                    </a>
+                                    <a href="https://modrinth.com/shaders" target="_blank" class="flex-1 bg-secondary text-white px-3 py-2 rounded-md hover:bg-secondary/90 transition-colors">
+                                        <i class="fa fa-link mr-1"></i>链接
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 常见问题部分 -->
+    <section id="faq" class="section-height bg-light flex items-start justify-center p-6 section-padding">
+        <div class="w-3/5">
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary mb-8 text-center">常见问题</h2>
+            
+            <div class="bg-white rounded-xl shadow-lg p-8 h-[calc(100vh-180px)] overflow-y-auto scrollable-content">
+                <div class="space-y-6">
+                    <div class="border-b border-gray-200 pb-5">
+                        <h3 class="text-lg font-semibold text-dark mb-2">如何安装游戏客户端？</h3>
+                        <p class="text-gray-600">下载适合您的启动器，运行后按照指引完成安装。首次启动会自动下载必要文件，请确保网络连接稳定。对于压缩包格式的启动器，解压后直接运行可执行文件即可。</p>
+                    </div>
+                    
+                    <div class="border-b border-gray-200 pb-5">
+                        <h3 class="text-lg font-semibold text-dark mb-2">模组安装后无法启动怎么办？</h3>
+                        <p class="text-gray-600">1. 检查模组与游戏版本是否匹配；2. 确保已安装必要的前置模组；3. 尝试删除冲突的模组；4. 检查Java版本是否符合要求（推荐Java 17）；5. 尝试清除游戏缓存并重启。</p>
+                    </div>
+                    
+                    <div class="border-b border-gray-200 pb-5">
+                        <h3 class="text-lg font-semibold text-dark mb-2">多人游戏连接失败怎么办？</h3>
+                        <p class="text-gray-600">检查服务器地址和端口是否正确，确认网络连接正常，防火墙是否阻止了游戏连接。部分服务器需要正版验证或特定模组。若连接延迟高，可尝试使用VPN或更换服务器节点。</p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold text-dark mb-2">游戏卡顿如何优化？</h3>
+                        <p class="text-gray-600">1. 降低视频设置中的渲染距离和画质；2. 安装性能优化模组（如Sodium、Lithium）；3. 确保显卡驱动为最新版本；4. 关闭后台不必要的程序；5. 增加游戏分配的内存。</p>
+                    </div>
+                    
+                    <div class="border-b border-gray-200 pb-5">
+                        <h3 class="text-lg font-semibold text-dark mb-2">如何更新游戏版本？</h3>
+                        <p class="text-gray-600">通过启动器的版本管理功能，可以轻松安装新的游戏版本。请注意，新版本可能不兼容旧版模组，更新前建议备份存档。对于主要版本更新，建议全新安装并手动迁移存档。</p>
+                    </div>
+                    
+                    <div class="border-b border-gray-200 pb-5">
+                        <h3 class="text-lg font-semibold text-dark mb-2">光影效果不生效如何解决？</h3>
+                        <p class="text-gray-600">确保已安装OptiFine或Iris等光影加载器，在视频设置中启用光影，并选择合适的光影包。低配设备可能需要降低光影质量或使用性能更友好的光影包。同时注意部分光影包需要特定的显卡支持。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 更新日志部分 -->
+    <section id="changelog" class="section-height bg-white flex items-start justify-center p-6 section-padding">
+        <div class="w-3/5">
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-primary mb-8 text-center">更新日志</h2>
+            <div class="bg-light rounded-xl shadow-lg p-8 h-[calc(100vh-180px)] overflow-y-auto scrollable-content">
+                <div class="space-y-8">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-semibold text-dark">v1.0.0 - 2025-09-28</h3>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">最新</span>
+                        </div>
+                        <ul class="space-y-2 text-gray-700">
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-blue-500 mt-1 mr-2"></i>
+                                <span>服务器fabric版本更新到1.6.10</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-blue-500 mt-1 mr-2"></i>
+                                <span>更新语音mod,地图mod到新版本</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-plus-circle text-green-500 mt-1 mr-2"></i>
+                                <span>添加视距优化（地平线）mod以及武器优化mod</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-plus-circle text-green-500 mt-1 mr-2"></i>
+                                <span>提供了部分支持视距优化的光影包</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 翻页按钮 -->
+    <div class="fixed right-6 bottom-8 flex flex-col space-y-4">
+        <div id="prevPage">
+            <button class="page-btn prev-btn">
+            <i class="fa fa-chevron-up"></i>
+        </button>
+        </div>
+        <div id="nextPage">
+        <button class="page-btn next-btn">
+            <i class="fa fa-chevron-down"></i>
+        </button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // 获取所有章节
+        const sections = Array.from(document.querySelectorAll('section'));
+        const totalSections = sections.length;
+        
+        // 平滑滚动到锚点
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // 导航栏滚动效果和选中状态
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            const homeSection = document.getElementById('home');
+            const scrollPosition = window.scrollY;
+            
+            // 导航栏背景变化 - 首页透明，其他页面有背景
+            if (scrollPosition < homeSection.offsetHeight) {
+                navbar.classList.remove('nav-solid');
+                navbar.classList.add('nav-transparent');
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('text-dark');
+                    link.classList.add('text-white');
+                });
+            } else {
+                navbar.classList.remove('nav-transparent');
+                navbar.classList.add('nav-solid');
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('text-white');
+                    link.classList.add('text-dark');
+                });
+            }
+            
+            // 高亮当前导航项
+            document.querySelectorAll('section').forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.offsetHeight;
+                const sectionId = section.getAttribute('id');
+                
+                if (scrollPosition >= sectionTop - 100 && scrollPosition < sectionTop + sectionHeight - 100) {
+                    document.querySelectorAll('.nav-link').forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${sectionId}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+            
+            // 控制翻页按钮状态
+            updatePageButtons();
+        });
+        
+        // 初始加载时设置首页为活跃状态
+        window.addEventListener('load', function() {
+            document.querySelector('.nav-link[href="#home"]').classList.add('active');
+            updatePageButtons();
+        });
+        
+        // 轮播图功能
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-item');
+        const dots = document.querySelectorAll('.carousel-dot');
+        
+        function showSlide(index) {
+            // 隐藏所有幻灯片
+            slides.forEach(slide => slide.classList.remove('active'));
+            // 移除所有指示点的活跃状态
+            dots.forEach(dot => dot.classList.remove('active', 'bg-opacity-100'));
+            dots.forEach(dot => dot.classList.add('bg-opacity-50'));
+            
+            // 显示当前幻灯片
+            slides[index].classList.add('active');
+            // 激活当前指示点
+            dots[index].classList.add('active', 'bg-opacity-100');
+            dots[index].classList.remove('bg-opacity-50');
+        }
+        
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+        
+        // 为指示点添加点击事件
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentSlide = index;
+                showSlide(currentSlide);
+            });
+        });
+        
+        // 自动轮播
+        setInterval(nextSlide, 5000);
+        
+        // 翻页功能
+        function getCurrentSectionIndex() {
+            const scrollPosition = window.scrollY + 100; // 增加偏移量，提高准确性
+            
+            for (let i = 0; i < sections.length; i++) {
+                const sectionTop = sections[i].offsetTop;
+                const sectionBottom = sectionTop + sections[i].offsetHeight;
+                
+                if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+                    return i;
+                }
+            }
+            
+            return 0; // 默认返回第一个章节
+        }
+        
+        function goToSection(index) {
+            if (index >= 0 && index < totalSections) {
+                window.scrollTo({
+                    top: sections[index].offsetTop,
+                    behavior: 'smooth'
+                });
+            }
+        }
+        
+        function updatePageButtons() {
+            const currentIndex = getCurrentSectionIndex();
+            const prevBtn = document.getElementById('prevPage');
+            const nextBtn = document.getElementById('nextPage');
+            
+            if (currentIndex === 0) {
+                // 第一页时禁用翻页按钮
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+            } else if (currentIndex === totalSections - 1){
+                // 最后一页时禁用下一页按钮
+                nextBtn.classList.add('hidden');
+            }else {
+                prevBtn.classList.remove('hidden');
+                nextBtn.classList.remove('hidden');
+            }
+        }
+        
+        // 上一页按钮点击事件
+        document.getElementById('prevPage').addEventListener('click', () => {
+            const currentIndex = getCurrentSectionIndex();
+            goToSection(currentIndex - 1);
+        });
+        
+        // 下一页按钮点击事件
+        document.getElementById('nextPage').addEventListener('click', () => {
+            const currentIndex = getCurrentSectionIndex();
+            goToSection(currentIndex + 1);
+        });
+    </script>
+</body>
+</html>
